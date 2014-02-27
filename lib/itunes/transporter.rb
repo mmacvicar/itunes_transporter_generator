@@ -78,7 +78,7 @@ module Itunes
       end
     end
 
-    class VersionScreenshot < Struct.new(:display_target, :file_name, :position, :locale_name)
+    class VersionScreenshot < Struct.new(:display_target, :file_name, :position, :locale_name, :checksum)
       include MetadataImage
 
       def to_s

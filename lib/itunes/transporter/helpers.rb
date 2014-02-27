@@ -8,7 +8,7 @@ module Itunes
       KNOWN_DISPLAY_TARGETS = {'ipad' => 'iOS-iPad', 'iphone_3.5in' => 'iOS-3.5-in', 'iphone_4in' =>'iOS-4-in'}
 
       def metadata_from_yaml(yaml_file)
-        objs = YAML.load_file(Dir.pwd + "/#{yaml_file}")
+        objs = YAML.load_file(File.join(Dir.pwd, yaml_file))
 
         return {
           :provider => objs['provider'],
