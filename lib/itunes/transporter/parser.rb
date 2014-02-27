@@ -16,7 +16,6 @@ module Itunes
 
 	      def metadata
 	      	objs.remove_namespaces!
-	      	puts objs.at_xpath('/package/provider')
 	        {
 	          :provider => objs.at_xpath('/package/provider').text,
 	          :team_id => objs.at_xpath('/package/team_id').text,
@@ -123,8 +122,8 @@ module Itunes
 	            leaderboard.name = dict.at_xpath('reference_name').text
 	            leaderboard.aggregate_parent_leaderboard = dict['aggregate_parent_leaderboard']
 	            leaderboard.sort_ascending =  dict.at_xpath('sort_ascending') ? dict.at_xpath('sort_ascending').text == "true" : false
-	            leaderboard.score_range_min = dict.at_xpath('score_range_min').text.to_i
-	            leaderboard.score_range_max = dict.at_xpath('score_range_max').text.to_i
+	            leaderboard.score_range_min = dict.at_xpath('score_range_min').text.to_i if dict.at_xpath('score_range_min')
+	            leaderboard.score_range_max = dict.at_xpath('score_range_max').text.to_i if dict.at_xpath('score_range_max')
 	            leaderboard.locales = []
 
 	            dict.search('locales/locale').each do |loc|
@@ -148,13 +147,13 @@ module Itunes
 
 	      def parse_purchases(objs)
 	        purchases = []
-
 	        objs.search('/package/software/software_metadata/in_app_purchases/in_app_purchase').each do |pur|
+
 	          purchase = InAppPurchase.new
 	          purchase.product_id = pur.at_xpath('product_id').text
 	          purchase.reference_name = pur.at_xpath('reference_name').text
 	          purchase.type = pur.at_xpath('type').text
-	          purchase.review_screenshot_image = ''
+	          purchase.review_screenshot_image = { checksum: pur.at_xpath('review_screenshot/checksum').text } if pur.at_xpath('review_screenshot/checksum')
 	          purchase.review_notes = pur.at_xpath('review_notes').text
 	          purchase.should_remove = false
 	          purchase.locales = []
@@ -197,18 +196,6 @@ module Itunes
 
 	        purchases
 	      end
-
-	      def parse_all_purchases(objs)
-	        purchases = {}
-	        if objs.search('/package/software/software_metadata/in_app_purchases')
-	          purchases = {
-	            :auto_renewable_purchase_family => [],
-	            :other_purchases => parse_purchases(objs)
-	          }
-	        end
-	        purchases
-	      end
-
     end
   end
 end
