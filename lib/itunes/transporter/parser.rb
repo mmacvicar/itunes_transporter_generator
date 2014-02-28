@@ -154,7 +154,7 @@ module Itunes
 	          purchase.reference_name = pur.at_xpath('reference_name').text
 	          purchase.type = pur.at_xpath('type').text
 	          purchase.review_screenshot_image = { checksum: pur.at_xpath('review_screenshot/checksum').text } if pur.at_xpath('review_screenshot/checksum')
-	          purchase.review_notes = pur.at_xpath('review_notes').text
+	          purchase.review_notes = pur.at_xpath('review_notes').text if pur.at_xpath('review_notes')
 	          purchase.should_remove = false
 	          purchase.locales = []
 	          purchase.products = []
