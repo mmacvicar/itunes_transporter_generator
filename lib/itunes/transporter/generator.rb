@@ -24,9 +24,9 @@ module Itunes
         @files_to_process = ['metadata.xml']
         @images_to_process = []
 
-        config_file = options.i || options.input
+        @config_file = options[:input_file]
 
-        metadata = metadata_from_yaml(config_file)
+        metadata = metadata_from_yaml(@config_file)
 
         @id_prefix = metadata[:id_prefix]
         @provider = metadata[:provider]
@@ -219,7 +219,7 @@ module Itunes
       end
 
       def create_image_xml(doc, image)
-        image_path = File.join(Dir.pwd,image.file_name)
+        image_path = File.join(File.dirname(@config_file),image.file_name)
         @images_to_process << image
 
         doc.file_name(image.normalized_filename)
@@ -233,8 +233,9 @@ module Itunes
         end
       end
 
-      def generate_metadata
-        metadata_file = File.new(Dir.pwd + '/metadata.xml', 'w')
+      def generate_metadata(output_dir=nil)
+        output_dir||=Dir.pwd
+        metadata_file = File.new(File.join(output_dir, 'metadata.xml'), 'w')
 
         doc = Builder::XmlMarkup.new(:target => metadata_file, :indent => 2)
         doc.instruct!(:xml, :version => '1.0', :encoding => 'UTF-8')
@@ -289,24 +290,24 @@ module Itunes
 
         metadata_file.close()
 
-        generate_itmsp
+        generate_itmsp(output_dir)
 
         output
       end
 
-      def generate_itmsp
-          itmsp_dir = @vendor_id + '.itmsp'
+      def generate_itmsp(output_dir)
+          itmsp_dir = File.join(output_dir, @vendor_id + '.itmsp')
 
         begin
           FileUtils.rm_rf(itmsp_dir) if Dir.exists?(itmsp_dir)
           Dir.mkdir(itmsp_dir)
 
           @files_to_process.each do |file|
-            FileUtils.cp(file, itmsp_dir)
+            FileUtils.move(File.join(output_dir,file), itmsp_dir)
           end
 
           @images_to_process.each do |image|
-            FileUtils.cp(image.file_name, File.join(itmsp_dir,image.normalized_filename))
+            FileUtils.cp(File.join(File.dirname(@config_file),image.file_name), File.join(itmsp_dir,image.normalized_filename))
           end
 
           output[:messages] << "Successfully created iTunes metadata package: #{itmsp_dir}"
