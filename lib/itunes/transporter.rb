@@ -24,33 +24,9 @@ module Itunes
       end
     end
 
-    class InAppPurchase < Struct.new(:product_id, :reference_name, :type, :duration, :free_trial_duration, :bonus_duration, :products, :locales, :review_screenshot_image, :review_notes, :should_remove)
-      def to_s
-        "Product ID: #{self.product_id} Reference Name: #{self.reference_name}"
-      end
-    end
-
     class Family < Struct.new(:name, :review_screenshot_image, :review_notes, :locales, :purchases)
       def to_s
         "Name: #{self.name} Purchases: #{self.purchases}"
-      end
-    end
-
-    class Product < Struct.new(:cleared_for_sale, :intervals, :should_remove, :wholesale_price_tier)
-      def to_s
-        "Cleared for sale: #{self.cleared_for_sale}, Tier: #{self.wholesale_price_tier}"
-      end
-    end
-
-    class Interval < Struct.new(:start_date, :end_date, :wholesale_price_tier)
-      def to_s
-        "Start date: #{self.start_date} End Date: #{self.end_date} Tier: #{self.wholesale_price_tier}"
-      end
-    end
-
-    class PurchaseLocale < Struct.new(:name, :title, :description, :publication_name)
-      def to_s
-        "Name: #{self.name} Title: #{self.title}"
       end
     end
 
@@ -112,6 +88,24 @@ module Itunes
       def normalized_filename
         "leaderboard_#{friendly_filename(id)}_#{normalized_source_filename}"
       end
+    end
+
+    class InAppPurchase < Struct.new(:product_id, :reference_name, :type, :duration, :free_trial_duration, :bonus_duration, :products, :locales, :review_screenshot_image, :review_notes, :should_remove, :status)
+        def to_s
+            "Product ID: #{self.product_id} Reference Name: #{self.reference_name}"
+        end
+    end
+
+    class Product < Struct.new(:cleared_for_sale, :intervals, :should_remove, :wholesale_price_tier)
+        def to_s
+            "Cleared for sale: #{self.cleared_for_sale}, Tier: #{self.wholesale_pricing_tier}"
+        end
+    end
+
+    class Interval < Struct.new(:start_date, :end_date, :wholesale_price_tier)
+    end
+
+    class PurchaseLocale < Struct.new(:name, :title, :description, :publication_name)
     end
 
     class IAPReviewImage < Struct.new(:id, :file_name)
