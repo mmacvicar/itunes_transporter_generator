@@ -117,7 +117,7 @@ module Itunes
 	        if objs.search('/package/software/software_metadata/game_center/leaderboards')
 	          objs.search('/package/software/software_metadata/game_center/leaderboards/leaderboard').each do |dict|
 	            leaderboard = Leaderboard.new
-	            leaderboard.default = dict.at_xpath('@default').text == 'true'
+	            leaderboard.default = dict.at_xpath('@default').text == 'true' if dict.at_xpath('@default')
 	            leaderboard.id = dict.at_xpath('leaderboard_id').text
 	            leaderboard.name = dict.at_xpath('reference_name').text
 	            leaderboard.aggregate_parent_leaderboard = dict['aggregate_parent_leaderboard']
@@ -130,9 +130,9 @@ module Itunes
 	              locale = LeaderboardLocale.new
 	              locale.name = loc.at_xpath('@name').text
 	              locale.title = loc.at_xpath('title').text
-	              locale.formatter_suffix = loc.at_xpath('formatter_suffix').text
-	              locale.formatter_suffix_singular = loc.at_xpath('formatter_suffix_singular').text
-	              locale.formatter_type = loc.at_xpath('formatter_type').text
+	              locale.formatter_suffix = loc.at_xpath('formatter_suffix').text if loc.at_xpath('formatter_suffix')
+	              locale.formatter_suffix_singular = loc.at_xpath('formatter_suffix_singular').text if loc.at_xpath('formatter_suffix_singular')
+	              locale.formatter_type = loc.at_xpath('formatter_type').text if loc.at_xpath('formatter_type')
 	              locale.should_remove = false
 
 	              leaderboard.locales << locale
@@ -191,6 +191,13 @@ module Itunes
 	            purchase.locales << locale
 	          end
 
+              pur.search('read_only_info/read_only_value').each do |info|
+              	key = info.at_xpath('@key').text
+              	value = info.text
+              	if key == "iap-status"
+              		purchase.status = value
+              	end
+              end
 	          purchases << purchase
 	        end
 
