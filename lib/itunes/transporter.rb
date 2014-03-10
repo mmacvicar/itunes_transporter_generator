@@ -131,5 +131,11 @@ module Itunes
         "iap_#{friendly_filename(name)}_#{normalized_source_filename}"
       end
     end
+
+    class RightsAndPricing < Struct.new(:cleared_territories,:sales_start_date, :intervals)
+      def to_s
+        s = "start_date: #{sales_start_date} territories: #{cleared_territories.join(", ")} intervals: #{intervals.collect { |i| i.to_s}.join("\n")}"
+      end
+    end
   end
 end
